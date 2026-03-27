@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 const links = [
   { to: '/', label: 'About' },
   { to: '/portfolio', label: 'Portfolio' },
+  { to: '/board', label: 'Board' },
 ]
 
 export default function Navbar() {
