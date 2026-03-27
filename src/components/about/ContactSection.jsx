@@ -3,9 +3,9 @@ import { useRef } from 'react'
 
 // 실제 연락처 정보로 교체하세요
 const contacts = [
-  { label: 'Email', value: 'your@email.com', href: 'mailto:your@email.com', icon: '✉️' },
-  { label: 'GitHub', value: 'github.com/username', href: 'https://github.com/username', icon: '🐙' },
-  { label: 'LinkedIn', value: 'LinkedIn 프로필', href: '#', icon: '💼' },
+  { label: 'Email', value: 'qmoy2510@gmail.com', href: 'mailto:qmoy2510@gmail.com', icon: '✉️' },
+  { label: 'GitHub', value: 'github.com/qmoy2510', href: 'https://github.com/qmoy2510', icon: '🐙' },
+  { label: 'LinkedIn', value: 'LinkedIn 프로필', href: 'https://www.linkedin.com/in/%ED%98%84%EB%B9%88-%EB%B0%95-6913793b9/', icon: '💼' },
 ]
 
 export default function ContactSection() {
