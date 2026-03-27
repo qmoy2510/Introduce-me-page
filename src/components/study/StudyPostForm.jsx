@@ -29,7 +29,7 @@ export default function StudyPostForm({ onClose, onSaved, editPost = null }) {
   async function handleSubmit(e) {
     e.preventDefault()
     if (!title.trim() || !content.trim()) { setError('제목과 본문을 입력해주세요.'); return }
-    if (code !== import.meta.env.VITE_WRITE_CODE) { setError('작성 코드가 틀렸습니다.'); return }
+    if (code !== 'myStudyLog2026') { setError('작성 코드가 틀렸습니다.'); return }
 
     setLoading(true)
     setError('')

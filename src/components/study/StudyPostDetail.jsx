@@ -18,7 +18,7 @@ export default function StudyPostDetail({ post, onClose, onEdit, onDeleted }) {
   })
 
   async function handleDelete() {
-    if (code !== import.meta.env.VITE_WRITE_CODE) {
+    if (code !== 'myStudyLog2026') {
       setError('작성 코드가 틀렸습니다.')
       return
     }
