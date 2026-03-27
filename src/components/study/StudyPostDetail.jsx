@@ -73,6 +73,17 @@ export default function StudyPostDetail({ post, onClose, onEdit, onDeleted }) {
           </div>
         </div>
 
+        {/* 첨부 이미지 */}
+        {post.image_url && (
+          <div className="px-6 pt-4">
+            <img
+              src={post.image_url}
+              alt="첨부 이미지"
+              className="w-full rounded-xl object-contain max-h-96 bg-surface"
+            />
+          </div>
+        )}
+
         {/* Markdown 본문 */}
         <div className="p-6 prose prose-invert prose-sm max-w-none
           prose-headings:text-text prose-p:text-text-sub prose-strong:text-text

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -17,14 +17,31 @@ export default function StudyPostForm({ onClose, onSaved, editPost = null }) {
   const [preview, setPreview] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [imageFile, setImageFile] = useState(null)
+  const [imagePreview, setImagePreview] = useState(null)
+  const fileInputRef = useRef(null)
 
   useEffect(() => {
     if (editPost) {
       setTitle(editPost.title)
       setCategory(editPost.category)
       setContent(editPost.content)
+      if (editPost.image_url) setImagePreview(editPost.image_url)
     }
   }, [editPost])
+
+  function handleImageChange(e) {
+    const file = e.target.files[0]
+    if (!file) return
+    setImageFile(file)
+    setImagePreview(URL.createObjectURL(file))
+  }
+
+  function handleImageRemove() {
+    setImageFile(null)
+    setImagePreview(null)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -34,16 +51,31 @@ export default function StudyPostForm({ onClose, onSaved, editPost = null }) {
     setLoading(true)
     setError('')
 
+    // 이미지 업로드
+    let image_url = editPost?.image_url ?? null
+    if (imageFile) {
+      const ext = imageFile.name.split('.').pop()
+      const path = `${Date.now()}.${ext}`
+      const { error: uploadErr } = await supabase.storage
+        .from('study-images')
+        .upload(path, imageFile)
+      if (uploadErr) { setError('이미지 업로드에 실패했습니다.'); setLoading(false); return }
+      const { data } = supabase.storage.from('study-images').getPublicUrl(path)
+      image_url = data.publicUrl
+    } else if (!imagePreview) {
+      image_url = null
+    }
+
     if (editPost) {
       const { error: err } = await supabase
         .from('study_posts')
-        .update({ title: title.trim(), category, content: content.trim() })
+        .update({ title: title.trim(), category, content: content.trim(), image_url })
         .eq('id', editPost.id)
       if (err) { setError('수정에 실패했습니다.'); setLoading(false); return }
     } else {
       const { error: err } = await supabase
         .from('study_posts')
-        .insert({ title: title.trim(), category, content: content.trim() })
+        .insert({ title: title.trim(), category, content: content.trim(), image_url })
       if (err) { setError('작성에 실패했습니다.'); setLoading(false); return }
     }
 
@@ -135,6 +167,42 @@ export default function StudyPostForm({ onClose, onSaved, editPost = null }) {
               </ReactMarkdown>
             </div>
           )}
+
+          {/* 이미지 첨부 */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-3">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current.click()}
+                className="text-xs px-3 py-1.5 rounded-lg bg-surface text-text-sub hover:text-text transition-colors"
+              >
+                이미지 첨부
+              </button>
+              {imagePreview && (
+                <button
+                  type="button"
+                  onClick={handleImageRemove}
+                  className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                >
+                  이미지 제거
+                </button>
+              )}
+            </div>
+            {imagePreview && (
+              <img
+                src={imagePreview}
+                alt="첨부 이미지 미리보기"
+                className="max-h-48 rounded-lg object-contain bg-surface"
+              />
+            )}
+          </div>
 
           {/* 작성 코드 + 제출 */}
           <div className="flex gap-3 items-center">
