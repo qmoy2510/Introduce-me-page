@@ -5,12 +5,12 @@ import remarkGfm from 'remark-gfm'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { supabase } from '../../libs/supabaseClient'
+import { useAuth } from '../../context/AuthContext'
 import { CATEGORY_COLORS } from './CategoryFilter'
 
 export default function StudyPostDetail({ post, onClose, onEdit, onDeleted }) {
+  const { user } = useAuth()
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [code, setCode] = useState('')
-  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
   const date = new Date(post.created_at).toLocaleDateString('ko-KR', {
@@ -18,13 +18,9 @@ export default function StudyPostDetail({ post, onClose, onEdit, onDeleted }) {
   })
 
   async function handleDelete() {
-    if (code !== 'myStudyLog2026') {
-      setError('작성 코드가 틀렸습니다.')
-      return
-    }
     setLoading(true)
     const { error: err } = await supabase.from('study_posts').delete().eq('id', post.id)
-    if (err) { setError('삭제에 실패했습니다.'); setLoading(false); return }
+    if (err) { setLoading(false); return }
     setShowDeleteModal(false)
     onDeleted()
     onClose()
@@ -57,20 +53,22 @@ export default function StudyPostDetail({ post, onClose, onEdit, onDeleted }) {
             </div>
             <button onClick={onClose} className="text-text-sub hover:text-text text-xl leading-none mt-1">✕</button>
           </div>
-          <div className="flex gap-2 mt-4">
-            <button
-              onClick={() => onEdit(post)}
-              className="text-xs px-3 py-1.5 rounded-lg bg-primary text-text-sub hover:text-text transition-colors"
-            >
-              수정
-            </button>
-            <button
-              onClick={() => setShowDeleteModal(true)}
-              className="text-xs px-3 py-1.5 rounded-lg bg-primary text-red-400 hover:text-red-300 transition-colors"
-            >
-              삭제
-            </button>
-          </div>
+          {user && (
+            <div className="flex gap-2 mt-4">
+              <button
+                onClick={() => onEdit(post)}
+                className="text-xs px-3 py-1.5 rounded-lg bg-primary text-text-sub hover:text-text transition-colors"
+              >
+                수정
+              </button>
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                className="text-xs px-3 py-1.5 rounded-lg bg-primary text-red-400 hover:text-red-300 transition-colors"
+              >
+                삭제
+              </button>
+            </div>
+          )}
         </div>
 
         {/* 첨부 이미지 */}
@@ -112,7 +110,7 @@ export default function StudyPostDetail({ post, onClose, onEdit, onDeleted }) {
         </div>
       </motion.div>
 
-      {/* 삭제 모달 */}
+      {/* 삭제 확인 모달 */}
       <AnimatePresence>
         {showDeleteModal && (
           <motion.div
@@ -120,7 +118,7 @@ export default function StudyPostDetail({ post, onClose, onEdit, onDeleted }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60]"
-            onClick={() => { setShowDeleteModal(false); setCode(''); setError('') }}
+            onClick={() => setShowDeleteModal(false)}
           >
             <motion.div
               initial={{ scale: 0.9 }}
@@ -129,19 +127,11 @@ export default function StudyPostDetail({ post, onClose, onEdit, onDeleted }) {
               onClick={e => e.stopPropagation()}
               className="bg-surface rounded-xl p-6 w-80 flex flex-col gap-4"
             >
-              <h3 className="text-text font-semibold">글 삭제</h3>
-              <input
-                type="password"
-                placeholder="작성 코드 입력"
-                value={code}
-                onChange={e => setCode(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleDelete()}
-                className="bg-primary text-text placeholder-text-sub rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-accent"
-              />
-              {error && <p className="text-red-400 text-xs">{error}</p>}
+              <h3 className="text-text font-semibold">글을 삭제하시겠습니까?</h3>
+              <p className="text-text-sub text-sm">삭제된 글은 복구할 수 없습니다.</p>
               <div className="flex justify-end gap-2">
                 <button
-                  onClick={() => { setShowDeleteModal(false); setCode(''); setError('') }}
+                  onClick={() => setShowDeleteModal(false)}
                   className="text-text-sub text-sm px-4 py-2 rounded-lg hover:bg-primary transition-colors"
                 >
                   취소

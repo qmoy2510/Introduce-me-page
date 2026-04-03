@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../libs/supabaseClient'
+import { useAuth } from '../context/AuthContext'
 import CategoryFilter from '../components/study/CategoryFilter'
 import StudyPostCard from '../components/study/StudyPostCard'
 import StudyPostDetail from '../components/study/StudyPostDetail'
 import StudyPostForm from '../components/study/StudyPostForm'
 
 export default function StudyLogPage() {
+  const { user } = useAuth()
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState('전체')
@@ -55,12 +57,14 @@ export default function StudyLogPage() {
               <h1 className="text-3xl font-bold text-text">Study Log</h1>
               <p className="text-text-sub text-sm mt-1">공부한 내용을 기록합니다.</p>
             </div>
-            <button
-              onClick={() => { setEditPost(null); setShowForm(true) }}
-              className="bg-accent hover:bg-mint text-bg font-semibold text-sm px-4 py-2 rounded-lg transition-colors"
-            >
-              + 글쓰기
-            </button>
+            {user && (
+              <button
+                onClick={() => { setEditPost(null); setShowForm(true) }}
+                className="bg-accent hover:bg-mint text-bg font-semibold text-sm px-4 py-2 rounded-lg transition-colors"
+              >
+                + 글쓰기
+              </button>
+            )}
           </div>
 
           <div className="w-12 h-1 bg-accent rounded-full mt-4 mb-8" />

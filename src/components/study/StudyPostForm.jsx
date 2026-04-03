@@ -13,7 +13,6 @@ export default function StudyPostForm({ onClose, onSaved, editPost = null }) {
   const [title, setTitle] = useState('')
   const [category, setCategory] = useState('기타')
   const [content, setContent] = useState('')
-  const [code, setCode] = useState('')
   const [preview, setPreview] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -46,7 +45,6 @@ export default function StudyPostForm({ onClose, onSaved, editPost = null }) {
   async function handleSubmit(e) {
     e.preventDefault()
     if (!title.trim() || !content.trim()) { setError('제목과 본문을 입력해주세요.'); return }
-    if (code !== 'myStudyLog2026') { setError('작성 코드가 틀렸습니다.'); return }
 
     setLoading(true)
     setError('')
@@ -204,19 +202,12 @@ export default function StudyPostForm({ onClose, onSaved, editPost = null }) {
             )}
           </div>
 
-          {/* 작성 코드 + 제출 */}
-          <div className="flex gap-3 items-center">
-            <input
-              type="password"
-              placeholder="작성 코드"
-              value={code}
-              onChange={e => setCode(e.target.value)}
-              className="flex-1 bg-surface text-text placeholder-text-sub rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-accent"
-            />
+          {/* 제출 */}
+          <div className="flex justify-end">
             <button
               type="submit"
               disabled={loading}
-              className="bg-accent hover:bg-mint text-bg font-semibold text-sm px-6 py-2 rounded-lg transition-colors disabled:opacity-50 shrink-0"
+              className="bg-accent hover:bg-mint text-bg font-semibold text-sm px-6 py-2 rounded-lg transition-colors disabled:opacity-50"
             >
               {loading ? '저장 중...' : editPost ? '수정' : '등록'}
             </button>
