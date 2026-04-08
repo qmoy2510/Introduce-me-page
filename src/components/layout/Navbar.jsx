@@ -8,6 +8,7 @@ const links = [
   { to: '/portfolio', label: 'Portfolio' },
   { to: '/study', label: 'Study' },
   { to: '/board', label: 'Board' },
+  { to: '/stock', label: 'Stock' },
 ]
 
 export default function Navbar() {
