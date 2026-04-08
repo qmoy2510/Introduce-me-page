@@ -14,34 +14,36 @@ export function useExchangeRate() {
 
   useEffect(() => {
     let cancelled = false
+    let completed = 0
 
-    async function fetchAll() {
-      setLoading(true)
-      const results = []
-      for (const { from, to } of PAIRS) {
-        try {
-          const data = await getExchangeRate(from, to)
+    setRates([])
+    setLoading(true)
+
+    for (const { from, to } of PAIRS) {
+      getExchangeRate(from, to)
+        .then(data => {
+          if (cancelled) return
           const info = data['Realtime Currency Exchange Rate']
           if (info) {
-            results.push({
+            const entry = {
               from,
               to,
               rate: parseFloat(info['5. Exchange Rate']),
-              bid: parseFloat(info['8. Bid Price']),
-              ask: parseFloat(info['9. Ask Price']),
+            }
+            setRates(prev => {
+              const next = [...prev.filter(r => r.from !== from), entry]
+              return PAIRS.map(p => next.find(r => r.from === p.from)).filter(Boolean)
             })
           }
-        } catch {
-          results.push({ from, to, rate: null })
-        }
-      }
-      if (!cancelled) {
-        setRates(results)
-        setLoading(false)
-      }
+        })
+        .catch(() => { /* ignore */ })
+        .finally(() => {
+          if (cancelled) return
+          completed++
+          if (completed === PAIRS.length) setLoading(false)
+        })
     }
 
-    fetchAll()
     return () => { cancelled = true }
   }, [])
 

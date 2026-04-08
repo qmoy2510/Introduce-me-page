@@ -26,24 +26,21 @@ export default function WatchlistSection() {
 
   useEffect(() => {
     let cancelled = false
-    async function fetchCharts() {
-      for (const { symbol } of WATCHLIST) {
-        try {
-          const data = await getDailyChart(symbol)
+    for (const { symbol } of WATCHLIST) {
+      getDailyChart(symbol)
+        .then(data => {
+          if (cancelled) return
           const series = data['Time Series (Daily)']
-          if (series && !cancelled) {
+          if (series) {
             const points = Object.entries(series)
               .slice(0, 30)
               .reverse()
               .map(([date, v]) => ({ date, close: parseFloat(v['4. close']) }))
             setChartData(prev => ({ ...prev, [symbol]: points }))
           }
-        } catch {
-          // ignore
-        }
-      }
+        })
+        .catch(() => { /* ignore */ })
     }
-    fetchCharts()
     return () => { cancelled = true }
   }, [])
 
