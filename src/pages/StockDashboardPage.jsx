@@ -3,7 +3,6 @@ import { motion } from 'framer-motion'
 import { getBatchQuotes } from '../libs/stockApi'
 import IndexTickerBar, { INDEX_SYMBOLS } from '../components/stock/IndexTickerBar'
 import WatchlistSection, { WATCHLIST_SYMBOLS } from '../components/stock/WatchlistSection'
-import StockSearch from '../components/stock/StockSearch'
 import FearGreedGauge from '../components/stock/FearGreedGauge'
 import StockNewsSection from '../components/stock/StockNewsSection'
 
@@ -51,7 +50,6 @@ export default function StockDashboardPage() {
         </div>
 
         <IndexTickerBar quotes={quotes} loading={loading} />
-        <StockSearch />
         <WatchlistSection quotes={quotes} loading={loading} />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

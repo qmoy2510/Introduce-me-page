@@ -1,3 +1,12 @@
+function fmt(n) {
+  if (n == null || isNaN(n)) return '-'
+  return n.toLocaleString(undefined, { maximumFractionDigits: 2 })
+}
+function fmtPct(n) {
+  if (n == null || isNaN(n)) return '-'
+  return Math.abs(n).toFixed(2) + '%'
+}
+
 export default function StockCard({ name, symbol, quote, loading, onClick }) {
   if (loading) {
     return (
@@ -28,12 +37,12 @@ export default function StockCard({ name, symbol, quote, loading, onClick }) {
       <div className="flex items-start justify-between mb-1">
         <p className="text-text-sub text-xs">{symbol}</p>
         <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isUp ? 'bg-accent/20 text-accent' : 'bg-red-500/20 text-red-400'}`}>
-          {isUp ? '▲' : '▼'} {Math.abs(quote.changePct).toFixed(2)}%
+          {isUp ? '▲' : '▼'} {fmtPct(quote.changePct)}
         </span>
       </div>
       <p className="text-text font-semibold text-sm mb-1">{name}</p>
-      <p className="text-text font-bold text-lg">{quote.price.toLocaleString()}</p>
-      <p className="text-text-sub text-xs mt-1">전일 {quote.prevClose?.toLocaleString()}</p>
+      <p className="text-text font-bold text-lg">{fmt(quote.price)}</p>
+      <p className="text-text-sub text-xs mt-1">전일 {fmt(quote.prevClose)}</p>
     </div>
   )
 }
