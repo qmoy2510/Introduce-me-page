@@ -7,7 +7,6 @@ export const WATCHLIST = [
   { name: 'Microsoft', symbol: 'MSFT' },
   { name: 'NVIDIA',    symbol: 'NVDA' },
   { name: 'Tesla',     symbol: 'TSLA' },
-  { name: 'Amazon',    symbol: 'AMZN' },
 ]
 
 export const WATCHLIST_SYMBOLS = WATCHLIST.map(w => w.symbol)
