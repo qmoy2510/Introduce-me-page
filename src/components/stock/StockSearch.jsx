@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { searchSymbol, getQuote } from '../../libs/stockApi'
+import { searchSymbol, getBatchQuotes } from '../../libs/stockApi'
 import StockDetailCard from './StockDetailCard'
 
 export default function StockSearch() {
@@ -20,7 +20,7 @@ export default function StockSearch() {
       setSearching(true)
       try {
         const data = await searchSymbol(val)
-        setResults(data.bestMatches || [])
+        setResults(data.data || [])
       } catch {
         setResults([])
       } finally {
@@ -29,14 +29,14 @@ export default function StockSearch() {
     }, 600)
   }
 
-  async function handleSelect(symbol) {
+  async function handleSelect(symbol, name) {
     setResults([])
-    setKeyword(symbol)
+    setKeyword(`${symbol} — ${name}`)
     setLoadingQuote(true)
     try {
-      const data = await getQuote(symbol)
+      const data = await getBatchQuotes([symbol])
       setSelectedSymbol(symbol)
-      setSelectedQuote(data['Global Quote'] || null)
+      setSelectedQuote(data[symbol] || null)
     } catch {
       setSelectedQuote(null)
     } finally {
@@ -60,14 +60,17 @@ export default function StockSearch() {
         )}
         {results.length > 0 && (
           <ul className="absolute z-20 w-full bg-surface border border-primary rounded-xl mt-1 max-h-60 overflow-y-auto shadow-xl">
-            {results.map(r => (
+            {results.slice(0, 8).map(r => (
               <li
-                key={r['1. symbol']}
-                onClick={() => handleSelect(r['1. symbol'])}
+                key={`${r.symbol}_${r.exchange}`}
+                onClick={() => handleSelect(r.symbol, r.instrument_name)}
                 className="px-4 py-3 hover:bg-primary cursor-pointer flex items-center justify-between"
               >
-                <span className="text-text font-medium">{r['1. symbol']}</span>
-                <span className="text-text-sub text-sm truncate max-w-[60%]">{r['2. name']}</span>
+                <span className="text-text font-medium">{r.symbol}</span>
+                <div className="text-right">
+                  <p className="text-text-sub text-sm truncate max-w-[160px]">{r.instrument_name}</p>
+                  <p className="text-text-sub text-xs">{r.exchange}</p>
+                </div>
               </li>
             ))}
           </ul>

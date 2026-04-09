@@ -23,18 +23,10 @@ export function useExchangeRate() {
       getExchangeRate(from, to)
         .then(data => {
           if (cancelled) return
-          const info = data['Realtime Currency Exchange Rate']
-          if (info) {
-            const entry = {
-              from,
-              to,
-              rate: parseFloat(info['5. Exchange Rate']),
-            }
-            setRates(prev => {
-              const next = [...prev.filter(r => r.from !== from), entry]
-              return PAIRS.map(p => next.find(r => r.from === p.from)).filter(Boolean)
-            })
-          }
+          setRates(prev => {
+            const next = [...prev.filter(r => r.from !== from), data]
+            return PAIRS.map(p => next.find(r => r.from === p.from)).filter(Boolean)
+          })
         })
         .catch(() => { /* ignore */ })
         .finally(() => {

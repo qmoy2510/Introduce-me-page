@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getQuote } from '../libs/stockApi'
+import { getBatchQuotes } from '../libs/stockApi'
 
 export function useStockData(symbols) {
   const [quotes, setQuotes] = useState({})
@@ -7,30 +7,15 @@ export function useStockData(symbols) {
 
   useEffect(() => {
     if (!symbols || symbols.length === 0) return
-
     let cancelled = false
-    let completed = 0
 
     setQuotes({})
     setLoading(true)
 
-    for (const symbol of symbols) {
-      getQuote(symbol)
-        .then(data => {
-          if (cancelled) return
-          const quote = data['Global Quote']
-          // 결과가 오는 즉시 해당 종목만 업데이트
-          if (quote && Object.keys(quote).length > 0) {
-            setQuotes(prev => ({ ...prev, [symbol]: quote }))
-          }
-        })
-        .catch(() => { /* ignore */ })
-        .finally(() => {
-          if (cancelled) return
-          completed++
-          if (completed === symbols.length) setLoading(false)
-        })
-    }
+    // 배치로 한 번에 요청 (1 API call)
+    getBatchQuotes(symbols)
+      .then(data => { if (!cancelled) { setQuotes(data); setLoading(false) } })
+      .catch(() => { if (!cancelled) setLoading(false) })
 
     return () => { cancelled = true }
   }, [symbols.join(',')])

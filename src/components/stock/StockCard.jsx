@@ -11,10 +11,7 @@ export default function StockCard({ name, symbol, quote, chartData, onClick }) {
     )
   }
 
-  const price = parseFloat(quote['05. price'])
-  const change = parseFloat(quote['09. change'])
-  const changePct = parseFloat(quote['10. change percent'])
-  const isUp = change >= 0
+  const isUp = quote.change >= 0
 
   return (
     <div
@@ -27,10 +24,10 @@ export default function StockCard({ name, symbol, quote, chartData, onClick }) {
           <p className="text-text font-semibold text-sm">{name}</p>
         </div>
         <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isUp ? 'bg-accent/20 text-accent' : 'bg-red-500/20 text-red-400'}`}>
-          {isUp ? '▲' : '▼'} {Math.abs(changePct).toFixed(2)}%
+          {isUp ? '▲' : '▼'} {Math.abs(quote.changePct).toFixed(2)}%
         </span>
       </div>
-      <p className="text-text font-bold text-lg mb-2">{price.toLocaleString()}</p>
+      <p className="text-text font-bold text-lg mb-2">{quote.price.toLocaleString()}</p>
       {chartData && chartData.length > 1 && (
         <div className="h-12">
           <ResponsiveContainer width="100%" height="100%">

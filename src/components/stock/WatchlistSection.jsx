@@ -4,17 +4,18 @@ import { getDailyChart } from '../../libs/stockApi'
 import StockCard from './StockCard'
 import StockChartSection from './StockChartSection'
 
+// Twelve Data 심볼 형식: 한국 주식은 심볼:KRX
 const WATCHLIST = [
-  { name: '삼성전자', symbol: '005930.KS' },
-  { name: 'SK하이닉스', symbol: '000660.KS' },
-  { name: 'NAVER', symbol: '035420.KS' },
-  { name: '카카오', symbol: '035720.KS' },
-  { name: '현대차', symbol: '005380.KS' },
-  { name: 'Apple', symbol: 'AAPL' },
-  { name: 'Microsoft', symbol: 'MSFT' },
-  { name: 'NVIDIA', symbol: 'NVDA' },
-  { name: 'Tesla', symbol: 'TSLA' },
-  { name: 'Amazon', symbol: 'AMZN' },
+  { name: '삼성전자',  symbol: '005930:KRX' },
+  { name: 'SK하이닉스', symbol: '000660:KRX' },
+  { name: 'NAVER',    symbol: '035420:KRX' },
+  { name: '카카오',   symbol: '035720:KRX' },
+  { name: '현대차',   symbol: '005380:KRX' },
+  { name: 'Apple',    symbol: 'AAPL' },
+  { name: 'Microsoft',symbol: 'MSFT' },
+  { name: 'NVIDIA',   symbol: 'NVDA' },
+  { name: 'Tesla',    symbol: 'TSLA' },
+  { name: 'Amazon',   symbol: 'AMZN' },
 ]
 
 const SYMBOLS = WATCHLIST.map(w => w.symbol)
@@ -29,14 +30,8 @@ export default function WatchlistSection() {
     for (const { symbol } of WATCHLIST) {
       getDailyChart(symbol)
         .then(data => {
-          if (cancelled) return
-          const series = data['Time Series (Daily)']
-          if (series) {
-            const points = Object.entries(series)
-              .slice(0, 30)
-              .reverse()
-              .map(([date, v]) => ({ date, close: parseFloat(v['4. close']) }))
-            setChartData(prev => ({ ...prev, [symbol]: points }))
+          if (!cancelled && data.length > 0) {
+            setChartData(prev => ({ ...prev, [symbol]: data.slice(-30) }))
           }
         })
         .catch(() => { /* ignore */ })
