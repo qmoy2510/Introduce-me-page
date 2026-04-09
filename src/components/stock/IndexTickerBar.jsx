@@ -8,10 +8,10 @@ const INDICES = [
 
 export const INDEX_SYMBOLS = INDICES.map(i => i.symbol)
 
-function TickerItem({ label, quote }) {
-  if (!quote) {
+function TickerItem({ label, quote, loading }) {
+  if (loading || !quote) {
     return (
-      <div className="flex items-center gap-2 px-4 py-2 bg-surface rounded-lg min-w-[150px] animate-pulse">
+      <div className={`flex items-center gap-2 px-4 py-2 bg-surface rounded-lg min-w-[150px] ${loading ? 'animate-pulse' : 'opacity-40'}`}>
         <div className="h-4 bg-primary rounded w-16" />
         <div className="h-4 bg-primary rounded w-12" />
       </div>
@@ -34,7 +34,7 @@ export default function IndexTickerBar({ quotes, loading }) {
     <div className="w-full overflow-x-auto scrollbar-none pb-1">
       <div className="flex gap-3 min-w-max">
         {INDICES.map(({ label, symbol }) => (
-          <TickerItem key={symbol} label={label} quote={loading ? null : quotes?.[symbol]} />
+          <TickerItem key={symbol} label={label} quote={quotes?.[symbol]} loading={loading} />
         ))}
       </div>
     </div>

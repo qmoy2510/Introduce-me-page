@@ -3,16 +3,16 @@ import StockCard from './StockCard'
 import StockChartSection from './StockChartSection'
 
 export const WATCHLIST = [
-  { name: '삼성전자',   symbol: '005930:KRX' },
-  { name: 'SK하이닉스', symbol: '000660:KRX' },
-  { name: 'NAVER',      symbol: '035420:KRX' },
-  { name: '카카오',     symbol: '035720:KRX' },
-  { name: '현대차',     symbol: '005380:KRX' },
-  { name: 'Apple',      symbol: 'AAPL' },
-  { name: 'Microsoft',  symbol: 'MSFT' },
-  { name: 'NVIDIA',     symbol: 'NVDA' },
-  { name: 'Tesla',      symbol: 'TSLA' },
-  { name: 'Amazon',     symbol: 'AMZN' },
+  { name: 'Apple',     symbol: 'AAPL' },
+  { name: 'Microsoft', symbol: 'MSFT' },
+  { name: 'NVIDIA',    symbol: 'NVDA' },
+  { name: 'Tesla',     symbol: 'TSLA' },
+  { name: 'Amazon',    symbol: 'AMZN' },
+  { name: 'Google',    symbol: 'GOOGL' },
+  { name: 'Meta',      symbol: 'META' },
+  { name: 'Netflix',   symbol: 'NFLX' },
+  { name: 'AMD',       symbol: 'AMD' },
+  { name: 'Palantir',  symbol: 'PLTR' },
 ]
 
 export const WATCHLIST_SYMBOLS = WATCHLIST.map(w => w.symbol)
@@ -29,7 +29,8 @@ export default function WatchlistSection({ quotes, loading }) {
             key={symbol}
             name={name}
             symbol={symbol}
-            quote={loading ? null : quotes?.[symbol]}
+            quote={quotes?.[symbol]}
+            loading={loading}
             onClick={setSelectedSymbol}
           />
         ))}
