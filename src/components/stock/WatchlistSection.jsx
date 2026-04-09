@@ -1,43 +1,24 @@
-import { useState, useEffect } from 'react'
-import { useStockData } from '../../hooks/useStockData'
-import { getDailyChart } from '../../libs/stockApi'
+import { useState } from 'react'
 import StockCard from './StockCard'
 import StockChartSection from './StockChartSection'
 
-// Twelve Data 심볼 형식: 한국 주식은 심볼:KRX
-const WATCHLIST = [
-  { name: '삼성전자',  symbol: '005930:KRX' },
+export const WATCHLIST = [
+  { name: '삼성전자',   symbol: '005930:KRX' },
   { name: 'SK하이닉스', symbol: '000660:KRX' },
-  { name: 'NAVER',    symbol: '035420:KRX' },
-  { name: '카카오',   symbol: '035720:KRX' },
-  { name: '현대차',   symbol: '005380:KRX' },
-  { name: 'Apple',    symbol: 'AAPL' },
-  { name: 'Microsoft',symbol: 'MSFT' },
-  { name: 'NVIDIA',   symbol: 'NVDA' },
-  { name: 'Tesla',    symbol: 'TSLA' },
-  { name: 'Amazon',   symbol: 'AMZN' },
+  { name: 'NAVER',      symbol: '035420:KRX' },
+  { name: '카카오',     symbol: '035720:KRX' },
+  { name: '현대차',     symbol: '005380:KRX' },
+  { name: 'Apple',      symbol: 'AAPL' },
+  { name: 'Microsoft',  symbol: 'MSFT' },
+  { name: 'NVIDIA',     symbol: 'NVDA' },
+  { name: 'Tesla',      symbol: 'TSLA' },
+  { name: 'Amazon',     symbol: 'AMZN' },
 ]
 
-const SYMBOLS = WATCHLIST.map(w => w.symbol)
+export const WATCHLIST_SYMBOLS = WATCHLIST.map(w => w.symbol)
 
-export default function WatchlistSection() {
-  const { quotes, loading } = useStockData(SYMBOLS)
-  const [chartData, setChartData] = useState({})
+export default function WatchlistSection({ quotes, loading }) {
   const [selectedSymbol, setSelectedSymbol] = useState(null)
-
-  useEffect(() => {
-    let cancelled = false
-    for (const { symbol } of WATCHLIST) {
-      getDailyChart(symbol)
-        .then(data => {
-          if (!cancelled && data.length > 0) {
-            setChartData(prev => ({ ...prev, [symbol]: data.slice(-30) }))
-          }
-        })
-        .catch(() => { /* ignore */ })
-    }
-    return () => { cancelled = true }
-  }, [])
 
   return (
     <section>
@@ -48,8 +29,7 @@ export default function WatchlistSection() {
             key={symbol}
             name={name}
             symbol={symbol}
-            quote={loading ? null : quotes[symbol]}
-            chartData={chartData[symbol]}
+            quote={loading ? null : quotes?.[symbol]}
             onClick={setSelectedSymbol}
           />
         ))}

@@ -1,28 +1,37 @@
-import { useState, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import IndexTickerBar from '../components/stock/IndexTickerBar'
-import ExchangeRateSection from '../components/stock/ExchangeRateSection'
+import { getBatchQuotes } from '../libs/stockApi'
+import IndexTickerBar, { INDEX_SYMBOLS } from '../components/stock/IndexTickerBar'
+import WatchlistSection, { WATCHLIST_SYMBOLS } from '../components/stock/WatchlistSection'
 import StockSearch from '../components/stock/StockSearch'
-import WatchlistSection from '../components/stock/WatchlistSection'
-import SectorPerformanceSection from '../components/stock/SectorPerformanceSection'
 import FearGreedGauge from '../components/stock/FearGreedGauge'
 import StockNewsSection from '../components/stock/StockNewsSection'
 
+// 인덱스 + 관심종목 심볼 합치기 (중복 제거)
+const ALL_SYMBOLS = [...new Set([...INDEX_SYMBOLS, ...WATCHLIST_SYMBOLS])]
+
 export default function StockDashboardPage() {
+  const [quotes, setQuotes] = useState({})
+  const [loading, setLoading] = useState(true)
   const [refreshKey, setRefreshKey] = useState(0)
-  const [refreshing, setRefreshing] = useState(false)
+
+  useEffect(() => {
+    setQuotes({})
+    setLoading(true)
+
+    getBatchQuotes(ALL_SYMBOLS)
+      .then(data => { setQuotes(data); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [refreshKey])
 
   function handleRefresh() {
-    setRefreshing(true)
     sessionStorage.clear()
     setRefreshKey(k => k + 1)
-    setTimeout(() => setRefreshing(false), 1000)
   }
 
   return (
     <div className="min-h-screen bg-bg pt-16">
-      <div className="max-w-6xl mx-auto px-4 py-8 space-y-8" key={refreshKey}>
-        {/* 헤더 */}
+      <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
         <div className="flex items-center justify-between">
           <motion.h1
             initial={{ opacity: 0, y: -10 }}
@@ -33,48 +42,22 @@ export default function StockDashboardPage() {
           </motion.h1>
           <button
             onClick={handleRefresh}
-            disabled={refreshing}
+            disabled={loading}
             className="flex items-center gap-2 px-4 py-2 bg-surface hover:bg-primary border border-primary rounded-xl text-text-sub hover:text-text transition-all text-sm disabled:opacity-50"
           >
-            <span className={refreshing ? 'animate-spin' : ''}>🔄</span>
-            {refreshing ? '갱신 중...' : '새로고침'}
+            <span className={loading ? 'animate-spin' : ''}>🔄</span>
+            {loading ? '로딩 중...' : '새로고침'}
           </button>
         </div>
 
-        {/* 지수 티커 바 */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.05 }}>
-          <IndexTickerBar />
-        </motion.div>
+        <IndexTickerBar quotes={quotes} loading={loading} />
+        <StockSearch />
+        <WatchlistSection quotes={quotes} loading={loading} />
 
-        {/* 환율 */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}>
-          <ExchangeRateSection />
-        </motion.div>
-
-        {/* 종목 검색 */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }}>
-          <StockSearch />
-        </motion.div>
-
-        {/* 관심 종목 */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-          <WatchlistSection />
-        </motion.div>
-
-        {/* 섹터 성과 + 공포탐욕 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 }}>
-            <SectorPerformanceSection />
-          </motion.div>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
-            <FearGreedGauge />
-          </motion.div>
-        </div>
-
-        {/* 뉴스 */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}>
+          <FearGreedGauge />
           <StockNewsSection />
-        </motion.div>
+        </div>
       </div>
     </div>
   )

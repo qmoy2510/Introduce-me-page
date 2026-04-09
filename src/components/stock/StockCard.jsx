@@ -1,12 +1,10 @@
-import { LineChart, Line, ResponsiveContainer, Tooltip } from 'recharts'
-
-export default function StockCard({ name, symbol, quote, chartData, onClick }) {
+export default function StockCard({ name, symbol, quote, onClick }) {
   if (!quote) {
     return (
       <div className="bg-surface rounded-xl p-4 animate-pulse">
         <div className="h-4 bg-primary rounded w-24 mb-2" />
-        <div className="h-6 bg-primary rounded w-20 mb-3" />
-        <div className="h-12 bg-primary rounded" />
+        <div className="h-6 bg-primary rounded w-20 mb-1" />
+        <div className="h-4 bg-primary rounded w-16" />
       </div>
     )
   }
@@ -19,35 +17,14 @@ export default function StockCard({ name, symbol, quote, chartData, onClick }) {
       className="bg-surface rounded-xl p-4 hover:bg-primary transition-colors cursor-pointer"
     >
       <div className="flex items-start justify-between mb-1">
-        <div>
-          <p className="text-text-sub text-xs mb-0.5">{symbol}</p>
-          <p className="text-text font-semibold text-sm">{name}</p>
-        </div>
+        <p className="text-text-sub text-xs">{symbol}</p>
         <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isUp ? 'bg-accent/20 text-accent' : 'bg-red-500/20 text-red-400'}`}>
           {isUp ? '▲' : '▼'} {Math.abs(quote.changePct).toFixed(2)}%
         </span>
       </div>
-      <p className="text-text font-bold text-lg mb-2">{quote.price.toLocaleString()}</p>
-      {chartData && chartData.length > 1 && (
-        <div className="h-12">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <Line
-                type="monotone"
-                dataKey="close"
-                stroke={isUp ? '#52B788' : '#E63946'}
-                strokeWidth={1.5}
-                dot={false}
-              />
-              <Tooltip
-                contentStyle={{ background: '#1B4332', border: 'none', borderRadius: 8, fontSize: 11 }}
-                formatter={(v) => [v.toLocaleString(), '종가']}
-                labelFormatter={() => ''}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      )}
+      <p className="text-text font-semibold text-sm mb-1">{name}</p>
+      <p className="text-text font-bold text-lg">{quote.price.toLocaleString()}</p>
+      <p className="text-text-sub text-xs mt-1">전일 {quote.prevClose?.toLocaleString()}</p>
     </div>
   )
 }
