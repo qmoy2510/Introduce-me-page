@@ -1,9 +1,7 @@
 const INDICES = [
-  { label: 'KOSPI (EWY)', symbol: 'EWY' },
-  { label: 'S&P 500',     symbol: 'SPY' },
-  { label: 'NASDAQ',      symbol: 'QQQ' },
-  { label: '다우존스',    symbol: 'DIA' },
-  { label: '닛케이 (EWJ)',symbol: 'EWJ' },
+  { label: 'S&P 500', symbol: 'SPY' },
+  { label: 'NASDAQ',  symbol: 'QQQ' },
+  { label: '다우존스',symbol: 'DIA' },
 ]
 
 export const INDEX_SYMBOLS = INDICES.map(i => i.symbol)
